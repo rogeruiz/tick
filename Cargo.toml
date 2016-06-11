@@ -1,0 +1,6 @@
+[package]
+name = "tick"
+version = "0.1.0"
+authors = ["Roger Steve Ruiz <hi@rog.gr"]
+
+[dependencies]
