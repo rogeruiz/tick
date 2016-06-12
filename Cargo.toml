@@ -13,6 +13,7 @@ keywords = [
 license = "MIT"
 
 [dependencies]
+sqlite = "0.21.2"
 
 [dependencies.clap]
 version = "2"
