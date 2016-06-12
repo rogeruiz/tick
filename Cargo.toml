@@ -1,6 +1,6 @@
 [package]
 name = "tick"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Roger Steve Ruiz <hi@rog.gr"]
 description = "A time-tracking cli tool that generates useful reports for the last eight days."
 repository = "https://github.com/rogeruiz/tick"
@@ -14,3 +14,13 @@ license = "MIT"
 license-file = "LICENSE.md"
 
 [dependencies]
+
+[dependencies.clap]
+version = "2"
+features = [
+    "suggestions",
+    "color",
+    "wrap_help",
+    "debug",
+    "yaml"
+]

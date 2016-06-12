@@ -1,0 +1,29 @@
+name: tick
+version: 0.2.0
+author: Roger Steve Ruiz <hi@rog.gr>
+about: A time-tracking cli tool that generates useful reports for the last eight days.
+args:
+    - config:
+        short: c
+        long: config
+        value_name: FILE
+        help: Sets a custom config file
+        takes_value: true
+    - INPUT:
+        help: Sets the input file to use
+        required: true
+        index: 1
+    - verbose:
+        short: v
+        multiple: true
+        help: Sets the level of verbosity
+subcommands:
+    - test:
+        about: controls testing features
+        version: 0.3.0
+        author: Someone E. <someone_else@other.com>
+        args:
+            - debug:
+                short: d
+                help: print debug information
+
