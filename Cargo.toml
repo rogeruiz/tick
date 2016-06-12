@@ -17,9 +17,8 @@ license = "MIT"
 [dependencies.clap]
 version = "2"
 features = [
-    "suggestions",
-    "color",
-    "wrap_help",
-    "debug",
-    "yaml"
+  "suggestions",
+  "color",
+  "wrap_help",
+  "yaml"
 ]

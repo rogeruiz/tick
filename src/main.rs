@@ -1,17 +1,26 @@
 #[macro_use]
 
 extern crate clap;
+//extern crate sqlite;
+
 use clap::App;
 
 fn main() {
 
+    //let connection = sqlite::open( ":memory:" )
+        //.unwrap();
+
     let tick = load_yaml!( "config/tick.yml" );
-    let matches = App::from_yaml( tick ).get_matches();
 
-    let config = matches.value_of( "config" )
-        .unwrap_or( "default.conf" );
+    let matches = App::from_yaml( tick )
+        .about( env!( "CARGO_PKG_DESCRIPTION" ) )
+        .version( crate_version!() )
+        .get_matches();
 
-    println!( "Using input files: {}", matches.value_of( "INPUT" ).unwrap() );
+    let name = matches.value_of( "name" )
+        .unwrap_or( "" );
+
+    println!( "Using the name: {}", name );
 
     match matches.occurrences_of( "v" ) {
         0 => println!( "No verbose info" ),
@@ -20,11 +29,17 @@ fn main() {
         3 | _ => println!( "Don't be crazy" ),
     }
 
-    if let Some( matches ) = matches.subcommand_matches( "test" ) {
-        if matches.is_present( "debug" ) {
-            println!( "Printing debug info..." );
-        } else {
-            println!( "Printing normally..." );
+    if let Some( matches ) = matches.subcommand_matches( "start" ) {
+        let new_name = matches.value_of( "name" ).unwrap_or( "" );
+        if matches.is_present( "name" ) as bool {
+            println!( "Overriding {} with {}", name , new_name );
+        }
+    }
+
+    if let Some( matches ) = matches.subcommand_matches( "stop" ) {
+        let new_name = matches.value_of( "name" ).unwrap_or( "" );
+        if matches.is_present( "name" ) as bool {
+            println!( "Overriding {} with {}", name , new_name );
         }
     }
 
