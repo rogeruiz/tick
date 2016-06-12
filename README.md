@@ -1,5 +1,7 @@
 # Tick CLI for tracking your time
 
+[![Project Build Status](https://travis-ci.org/rogeruiz/tick.svg?branch=master)](https://travis-ci.org/rogeruiz/tick)
+
 I use `tick` to track all my time using `tmux` sessions. But `tick` can be used
 without `tmux`, `node` or any other dependency. The `tick` CLI is written in Rust.
 
