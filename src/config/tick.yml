@@ -1,4 +1,3 @@
-
 name: tick
 args:
   - name: &name
@@ -13,16 +12,17 @@ args:
       takes_value: true
   - verbose:
       short: v
-      multiple: true
-      help: Sets the level of verbosity
+      long: verbose
+      multiple: false
+      help: Sets the level of verbosity.
 subcommands:
   - start:
-      about: Start a ticking timer
+      about: Start a ticking timer.
       args:
         - name: *name
         - entry: *entry
   - stop:
-      about: Stop a ticking timer
+      about: Stop a ticking timer.
       args:
         - name: *name
         - entry: *entry
