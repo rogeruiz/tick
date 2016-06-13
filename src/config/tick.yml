@@ -26,3 +26,12 @@ subcommands:
       args:
         - name: *name
         - entry: *entry
+  - data:
+      about: Export data from timers.
+      args:
+        - name: *name
+        - type:
+            short: t
+            long: type
+            help: Type of data to export, i.e. 'csv' or 'json'
+            takes_value: true
