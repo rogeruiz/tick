@@ -1,14 +1,18 @@
 #[macro_use]
 
 extern crate clap;
+extern crate chrono;
 //extern crate sqlite;
 
 use clap::App;
+use chrono::*;
+
+//mod database;
+//mod memo;
+//pub mod timer;
+//mod relay;
 
 fn main() {
-
-    //let connection = sqlite::open( ":memory:" )
-        //.unwrap();
 
     let tick = load_yaml!( "config/tick.yml" );
 
@@ -17,29 +21,69 @@ fn main() {
         .version( crate_version!() )
         .get_matches();
 
-    let name = matches.value_of( "name" )
+    let be_verbose = matches.is_present( "verbose" );
+
+    let mut name = matches.value_of( "name" )
         .unwrap_or( "" );
 
-    println!( "Using the name: {}", name );
-
-    match matches.occurrences_of( "v" ) {
-        0 => println!( "No verbose info" ),
-        1 => println!( "Some verbose info" ),
-        2 => println!( "Tons of verbose info" ),
-        3 | _ => println!( "Don't be crazy" ),
+    if be_verbose {
+        println!( "Using default name '{}' for timers", name );
     }
 
     if let Some( matches ) = matches.subcommand_matches( "start" ) {
-        let new_name = matches.value_of( "name" ).unwrap_or( "" );
+        let current_time = Local::now();
         if matches.is_present( "name" ) as bool {
-            println!( "Overriding {} with {}", name , new_name );
+            name = matches.value_of( "name" ).unwrap();
+            if be_verbose {
+                println!( "Updating name '{}' for timers", name );
+            }
+        }
+        if be_verbose {
+            println!(
+                "Starting timer for '{}' @ '{}'",
+                name,
+                current_time
+            );
         }
     }
 
     if let Some( matches ) = matches.subcommand_matches( "stop" ) {
-        let new_name = matches.value_of( "name" ).unwrap_or( "" );
+        let current_time = Local::now();
         if matches.is_present( "name" ) as bool {
-            println!( "Overriding {} with {}", name , new_name );
+            name = matches.value_of( "name" ).unwrap();
+            if be_verbose {
+                println!( "Updating name '{}' for timers", name );
+            }
+        }
+        if be_verbose {
+            println!(
+                "Stopping timer for {} @ {}",
+                name,
+                current_time
+            );
+        }
+    }
+
+    if let Some( matches ) = matches.subcommand_matches( "data" ) {
+        if matches.is_present( "type" ) as bool {
+            if be_verbose {
+                println!(
+                    "Data type selected for output {}",
+                    matches.value_of( "type" ).unwrap()
+                );
+            }
+        }
+        if matches.is_present( "name" ) as bool {
+            name = matches.value_of( "name" ).unwrap();
+            if be_verbose {
+                println!( "Using new name '{}' for timers", name );
+            }
+        }
+        if be_verbose {
+            println!(
+                "Searching for {}",
+                name
+            );
         }
     }
 
