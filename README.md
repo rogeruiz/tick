@@ -1,9 +1,16 @@
 # Tick CLI for tracking your time
 
-[![Project Build Status](https://travis-ci.org/rogeruiz/tick.svg?branch=master)](https://travis-ci.org/rogeruiz/tick)
-
 I use `tick` to track all my time using `tmux` sessions. But `tick` can be used
 without `tmux`, `node` or any other dependency. The `tick` CLI is written in Rust.
+
+Info | Description
+--- | ---
+[![Project Build Status](https://travis-ci.org/rogeruiz/tick.svg?branch=master)](https://travis-ci.org/rogeruiz/tick) | Project build status for Tick CLI
+[Installation](#installation) | Installing Tick CLI.
+[Motivation](#motivation) | Why use Tick CLI?
+[Inspiration](#inspiration) | Everything is a remix, including Tick CLI.
+[Contributing](CONTRIBUTING.md) | Contribute to Tick CLI.
+[License](LICENSE.md) | License for Tick CLI.
 
 ## Installation
 
