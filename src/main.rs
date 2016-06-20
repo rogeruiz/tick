@@ -2,12 +2,11 @@
 
 extern crate clap;
 extern crate chrono;
-//extern crate sqlite;
 
 use clap::App;
 use chrono::*;
 
-//mod database;
+mod database;
 //mod memo;
 //pub mod timer;
 //mod relay;
@@ -26,9 +25,11 @@ fn main() {
     let mut name = matches.value_of( "name" )
         .unwrap_or( "" );
 
-    if be_verbose {
+    if be_verbose && name != "" {
         println!( "Using default name '{}' for timers", name );
     }
+
+    let timers_db = database::create_and_open( be_verbose );
 
     if let Some( matches ) = matches.subcommand_matches( "start" ) {
         let current_time = Local::now();
@@ -45,6 +46,19 @@ fn main() {
                 current_time
             );
         }
+        let query = format!( "
+            INSERT INTO timers (
+                id,
+                name,
+                start_time,
+                end_time
+            ) VALUES (1,
+                '{}',
+                '{}',
+                'NOW'
+            );
+        ", name, current_time );
+        timers_db.execute( query ).unwrap();
     }
 
     if let Some( matches ) = matches.subcommand_matches( "stop" ) {
