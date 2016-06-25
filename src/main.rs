@@ -29,7 +29,8 @@ fn main() {
         println!( "Using default name '{}' for timers", name );
     }
 
-    let timers_db = database::create_and_open( be_verbose );
+    //let mut timers_db = database::Database::create( be_verbose );
+    let db = Database::create( be_verbose );
 
     if let Some( matches ) = matches.subcommand_matches( "start" ) {
         let current_time = Local::now();
@@ -39,26 +40,13 @@ fn main() {
                 println!( "Updating name '{}' for timers", name );
             }
         }
-        if be_verbose {
-            println!(
-                "Starting timer for '{}' @ '{}'",
-                name,
-                current_time
-            );
-        }
-        let query = format!( "
-            INSERT INTO timers (
-                id,
-                name,
-                start_time,
-                end_time
-            ) VALUES (1,
-                '{}',
-                '{}',
-                'NOW'
-            );
-        ", name, current_time );
-        timers_db.execute( query ).unwrap();
+        println!(
+            "Starting timer for '{}' @ '{}'",
+            name,
+            current_time
+        );
+        //timers_db = database::write_start( timers_db, be_verbose );
+        //timers_db.( query ).unwrap();
     }
 
     if let Some( matches ) = matches.subcommand_matches( "stop" ) {
