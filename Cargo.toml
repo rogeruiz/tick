@@ -2,7 +2,7 @@
 name = "tick"
 version = "0.2.0"
 authors = ["Roger Steve Ruiz <hi@rog.gr"]
-description = "A time-tracking cli tool that generates useful reports for the last eight days."
+description = "A time-tracking cli tool that generates useful reports for the last week."
 repository = "https://github.com/rogeruiz/tick"
 readme = "README.md"
 keywords = [

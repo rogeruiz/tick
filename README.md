@@ -1,5 +1,7 @@
 # Tick CLI for tracking your time
 
+![Angry clock eats person](angry-clock-eats-person.png)
+
 I use `tick` to track all my time using `tmux` sessions. But `tick` can be used
 without `tmux`, `node` or any other dependency. The `tick` CLI is written in Rust.
 
