@@ -2,105 +2,55 @@
 
 extern crate clap;
 extern crate chrono;
+extern crate tick;
+extern crate diesel;
+
+use self::tick::*;
+use self::tick::models::*;
+use self::diesel::prelude::*;
 
 use clap::App;
 use chrono::*;
 
-mod relay;
-
-fn main() {
-
-    let tick = load_yaml!( "config/tick.yml" );
-
-    let matches = App::from_yaml( tick )
+/*
+ * The main function which sets up the CLI and calls the match handlers
+ */
+fn main () {
+    let config = load_yaml!( "config.yml" );
+    let matches = App::from_yaml( config )
         .about( env!( "CARGO_PKG_DESCRIPTION" ) )
         .version( crate_version!() )
         .get_matches();
-
-    let be_verbose = matches.is_present( "verbose" );
-
-    let mut name = matches.value_of( "name" )
-        .unwrap_or( "" );
-
-    let mut entry = matches.value_of( "entry" )
-        .unwrap_or( "" );
-
-    if be_verbose && name != "" {
-        println!( "Using default name '{}' for timers", name );
-    }
-
-    //let mut timers_db = database::Database::create( be_verbose );
+    let verbosity = matches.is_present( "verbose" );
 
     match matches.subcommand() {
-        ( "start", Some( sub_m ) ) => {
-            let mut query = relay::Query {
-                name: name,
-                start_time: &Local::now(),
-                end_time: &Local::now(),
-                start_entry: entry,
-                end_entry: "",
-                verbose: &be_verbose,
-            };
-            if sub_m.is_present( "name" ) as bool {
-                query.name = sub_m.value_of( "name" ).unwrap();
-                if be_verbose {
-                    println!( "Updating name '{}' for timers", query.name );
-                }
-            }
-            if sub_m.is_present( "entry" ) as bool {
-                query.start_entry = sub_m.value_of( "entry" ).unwrap();
-                if be_verbose {
-                    println!( "Updating entry '{}' for timers", query.start_entry );
-                }
-            }
-            println!(
-                "Starting timer for '{}' @ '{}' with message {}",
-                query.name,
-                query.start_time,
-                query.start_entry
-            );
+        ( "data", Some( options ) ) => {
 
-            query.start_timer();
+            use tick::schema::timers::dsl::*;
+
+            if verbosity {
+                println!( "Starting a timer, with options ({:?})", options );
+            }
+            let connection = establish_connection();
+            let results = timers.load::<Timer>( &connection )
+                .expect( "Error loading timers" );
+
+            println!( "Displaying {} timers", results.len() );
+            for timer in results {
+                println!( "Id: {:?}", timer.id);
+                println!( "-------------------\n");
+                println!( "Name: {:?}", timer.name);
+                println!( "-------------------\n");
+                println!( "Start Time: {:?}", timer.start_time);
+                println!( "-------------------\n");
+                println!( "End Time: {:?}", timer.end_time);
+                println!( "-------------------\n");
+                println!( "Start Entry: {:?}", timer.start_entry);
+                println!( "-------------------\n");
+                println!( "End Entry: {:?}", timer.end_entry);
+            }
+
         },
-        //Some( "stop" ) => {
-            //let current_time = Local::now();
-            //if matches.is_present( "name" ) as bool {
-                //name = matches.value_of( "name" ).unwrap();
-                //if be_verbose {
-                    //println!( "Updating name '{}' for timers", name );
-                //}
-            //}
-            //if be_verbose {
-                //println!(
-                    //"Stopping timer for {} @ {}",
-                    //name,
-                    //current_time
-                //);
-            //}
-        //},
-        //Some( "data" ) => {
-            //if matches.is_present( "type" ) as bool {
-                //if be_verbose {
-                    //println!(
-                        //"Data type selected for output {}",
-                        //matches.value_of( "type" ).unwrap()
-                    //);
-                //}
-            //}
-            //if matches.is_present( "name" ) as bool {
-                //name = matches.value_of( "name" ).unwrap();
-                //if be_verbose {
-                    //println!( "Using new name '{}' for timers", name );
-                //}
-            //}
-            //if be_verbose {
-                //println!(
-                    //"Searching for {}",
-                    //name
-                //);
-            //}
-        //},
         _ => (),
     };
-
 }
