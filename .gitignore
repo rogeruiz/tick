@@ -1,1 +1,15 @@
+# Tick specific files
 target
+.env
+
+# OS and Editor files
+.DS_Store
+*.DS_Store
+Thumbs.db
+*.sublime-project
+*.sublime-workspace
+.svn
+.idea
+
+# Ignore fun directories
+tmp/
