@@ -10,7 +10,7 @@ use self::tick::models::*;
 use self::diesel::prelude::*;
 
 use clap::App;
-use chrono::*;
+//use chrono::*;
 
 /*
  * The main function which sets up the CLI and calls the match handlers
@@ -24,32 +24,49 @@ fn main () {
     let verbosity = matches.is_present( "verbose" );
 
     match matches.subcommand() {
-        ( "data", Some( options ) ) => {
-
-            use tick::schema::timers::dsl::*;
-
+        ( "start", Some( options ) ) => {
+            //use tick::schema::timers::dsl::*;
+            let timer_name = options.value_of( "name" );
+            let timer_entry = options.value_of( "entry" );
             if verbosity {
-                println!( "Starting a timer, with options ({:?})", options );
+                println!( "Starting a timer for `{}` with message \"{}\".", timer_name.unwrap(), timer_entry.unwrap() );
             }
+        },
+        ( "stop", Some( options ) ) => {
+            //use tick::schema::timers::dsl::*;
+            let timer_name = options.value_of( "name" );
+            let timer_entry = options.value_of( "entry" );
+            if verbosity {
+                println!( "Ending a timer for `{}` with message \"{}\".", timer_name.unwrap(), timer_entry.unwrap() );
+            }
+        },
+        ( "data", Some( options ) ) => {
+            use tick::schema::timers::dsl::*;
             let connection = establish_connection();
-            let results = timers.load::<Timer>( &connection )
+            let results = timers.order( id.asc() )
+                .load::<Timer>( &connection )
                 .expect( "Error loading timers" );
-
             println!( "Displaying {} timers", results.len() );
             for timer in results {
-                println!( "Id: {:?}", timer.id);
-                println!( "-------------------\n");
-                println!( "Name: {:?}", timer.name);
-                println!( "-------------------\n");
-                println!( "Start Time: {:?}", timer.start_time);
-                println!( "-------------------\n");
-                println!( "End Time: {:?}", timer.end_time);
-                println!( "-------------------\n");
-                println!( "Start Entry: {:?}", timer.start_entry);
-                println!( "-------------------\n");
-                println!( "End Entry: {:?}", timer.end_entry);
+                println!( "{:?}", timer )
             }
-
+        },
+        ( "status", Some( options ) ) => {
+            use tick::schema::timers::dsl::*;
+            let connection = establish_connection();
+            let results = timers.filter( end_time.is_null() )
+                .order( id.desc() )
+                .load::<Timer>( &connection )
+                .expect( "Error loading timers" );
+            match options.occurrences_of( "all" ) {
+                1 => {
+                    println!( "Status for all timers:" );
+                    for timer in results {
+                        println!( "{:?}", timer )
+                    }
+                },
+                _ => println!( "Status for latest timer: {:?}", results.first() ),
+            }
         },
         _ => (),
     };

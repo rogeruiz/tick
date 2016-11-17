@@ -1,3 +1,4 @@
+#[derive(Debug)]
 #[derive(Queryable)]
 pub struct Timer {
     pub id: Option<i32>,
