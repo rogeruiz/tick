@@ -26,6 +26,13 @@ subcommands:
       args:
         - name: *name
         - entry: *entry
+  - status:
+      about: Get the status of a running timer.
+      args:
+        - all:
+            short: a
+            long: all
+            help: Show all running timers.
   - data:
       about: Export data from timers.
       args:
@@ -33,5 +40,5 @@ subcommands:
         - type:
             short: t
             long: type
-            help: Type of data to export, i.e. 'csv' or 'json'
+            help: Type of data to export, i.e. 'csv' or 'json'.
             takes_value: true
