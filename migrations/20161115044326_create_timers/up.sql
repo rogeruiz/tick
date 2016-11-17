@@ -1,5 +1,5 @@
 CREATE TABLE timers (
-  id INTEGER PRIMARY KEY,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT,
   start_time INTEGER,
   end_time INTEGER,
