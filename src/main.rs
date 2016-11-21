@@ -1,7 +1,6 @@
 #[macro_use]
 
 extern crate clap;
-extern crate chrono;
 extern crate tick;
 extern crate diesel;
 
@@ -10,7 +9,6 @@ use self::tick::models::*;
 use self::diesel::prelude::*;
 
 use clap::App;
-//use chrono::*;
 
 /*
  * The main function which sets up the CLI and calls the match handlers
@@ -25,12 +23,14 @@ fn main () {
 
     match matches.subcommand() {
         ( "start", Some( options ) ) => {
-            //use tick::schema::timers::dsl::*;
-            let timer_name = options.value_of( "name" );
-            let timer_entry = options.value_of( "entry" );
+            use tick::schema::timers::dsl::*;
+            let connection = establish_connection();
+            let timer_name = options.value_of( "name" ).unwrap();
+            let timer_entry = options.value_of( "entry" ).unwrap();
             if verbosity {
-                println!( "Starting a timer for `{}` with message \"{}\".", timer_name.unwrap(), timer_entry.unwrap() );
+                println!( "Starting a timer for `{}` with message \"{}\".", timer_name, timer_entry );
             }
+            let timer = create_timer( &connection, &timer_name, &timer_entry );
         },
         ( "stop", Some( options ) ) => {
             //use tick::schema::timers::dsl::*;
