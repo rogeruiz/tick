@@ -13,16 +13,22 @@ keywords = [
 license = "MIT"
 
 [dependencies]
-diesel = "0.8.0"
-diesel_codegen = { version = "0.8.0", features = [ "sqlite" ] }
-dotenv = "0.8.0"
-chrono = "0.2.22"
+dotenv = "0.10.0"
+chrono = "0.3.1"
 
 [dependencies.clap]
-version = "2"
+version = "2.24.2"
 features = [
   "suggestions",
   "color",
   "wrap_help",
   "yaml",
 ]
+
+[dependencies.diesel]
+version = "0.13.0"
+features = [ "sqlite" ]
+
+[dependencies.diesel_codegen]
+version = "0.13.0"
+features = [ "sqlite" ]
