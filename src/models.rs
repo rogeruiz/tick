@@ -1,20 +1,21 @@
-use super::schema::timers;
-
-#[derive(Debug)]
-#[derive(Queryable)]
+#[ derive( Queryable ) ]
 pub struct Timer {
-    pub id: Option<i32>,
-    pub name: Option<String>,
-    pub start_time: Option<String>,
-    pub end_time: Option<String>,
-    pub start_entry: Option<String>,
-    pub end_entry: Option<String>,
+    pub id: i32,
+    pub name: String,
+    pub start_time: i32,
+    pub end_time: i32,
+    pub start_entry: String,
+    pub end_entry: String,
+    pub running: i32,
 }
 
-#[derive(Insertable)]
-#[table_name="timers"]
+use super::schema::timers;
+
+#[ derive( Insertable ) ]
+#[ table_name="timers" ]
 pub struct NewTimer<'a> {
     pub name: &'a str,
-    pub start_time: &'a str,
+    pub start_time: i32,
     pub start_entry: &'a str,
+    pub running: i32,
 }

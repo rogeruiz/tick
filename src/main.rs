@@ -1,14 +1,75 @@
-#[macro_use]
+#[ macro_use ] extern crate diesel_codegen;
+pub mod schema;
+pub mod models;
+#[ macro_use ] extern crate diesel;
+#[ macro_use ] extern crate clap;
+extern crate dotenv;
+extern crate chrono;
 
-extern crate clap;
-extern crate tick;
-extern crate diesel;
-
-use self::tick::*;
-use self::tick::models::*;
-use self::diesel::prelude::*;
+use chrono::prelude::*;
+use diesel::prelude::*;
+use diesel::sqlite::SqliteConnection;
+use dotenv::dotenv;
+use std::env;
 
 use clap::App;
+
+use models::*;
+use schema::timers;
+
+fn establish_connection() -> SqliteConnection {
+    dotenv().ok();
+
+    let database_url = env::var( "DATABASE_URL" )
+        .expect( "DATABASE_URL expected to be set in the environment" );
+    SqliteConnection::establish( &database_url )
+        .expect( &format!( "Error connecting to {}", database_url ) )
+}
+
+fn create_timer<'a>( conn: &SqliteConnection, name: &'a str, start_entry: &'a str ) -> usize {
+
+    let new_timer = NewTimer {
+        name: name,
+        start_time: Local::now().timestamp() as i32,
+        start_entry: start_entry,
+        running: 1,
+    };
+
+    diesel::insert( &new_timer )
+        .into( timers::table )
+        .execute( conn )
+        .expect( "Error saving new timer" )
+}
+
+fn parse_date<'a>( ts: i32 ) -> String {
+    let timestring = format!( "{:?}", ts );
+    let dt: DateTime<Local> = Local.datetime_from_str( &timestring, "%s" ).unwrap();
+    dt.format( "%Y-%m-%d" ).to_string()
+}
+
+fn parse_time<'a>( ts: i32 ) -> String {
+    let timestring = format!( "{:?}", ts );
+    let dt: DateTime<Local> = Local.datetime_from_str( &timestring, "%s" ).unwrap();
+    if ts == 0 {
+        format!( "NOW" )
+    } else {
+        dt.format( "%H:%M:%S" ).to_string()
+    }
+}
+
+fn get_duration<'a>( s: i32, e: i32 ) -> String {
+    let mut now: i32 = Local::now().timestamp() as i32;
+    if e > s {
+        now = e;
+    }
+    let delta = now - s;
+    format!(
+        "{hours:02}:{minutes:02}:{seconds:02}",
+        hours=delta / 60 / 60,
+        minutes=delta / 60 % 60,
+        seconds=delta % 60
+    )
+}
 
 /*
  * The main function which sets up the CLI and calls the match handlers
@@ -22,50 +83,99 @@ fn main () {
     let verbosity = matches.is_present( "verbose" );
 
     match matches.subcommand() {
-        ( "start", Some( options ) ) => {
-            use tick::schema::timers::dsl::*;
+        ( "start", Some( o ) ) => {
+            let n = o.value_of( "name" ).unwrap();
+            let e = o.value_of( "entry" ).unwrap_or( "" );
+            if verbosity {
+                println!( "Starting a timer for `{}` with message \"{}\".", &n, &e );
+            }
             let connection = establish_connection();
-            let timer_name = options.value_of( "name" ).unwrap();
-            let timer_entry = options.value_of( "entry" ).unwrap();
-            if verbosity {
-                println!( "Starting a timer for `{}` with message \"{}\".", timer_name, timer_entry );
-            }
-            let timer = create_timer( &connection, &timer_name, &timer_entry );
+            create_timer( &connection, &n, &e );
+            println!( "Started timer for {}", n );
         },
-        ( "stop", Some( options ) ) => {
-            //use tick::schema::timers::dsl::*;
-            let timer_name = options.value_of( "name" );
-            let timer_entry = options.value_of( "entry" );
+        ( "stop", Some( o ) ) => {
+            use schema::timers::dsl::*;
+            let n = o.value_of( "name" ).unwrap_or( "" );
+            let e = o.value_of( "entry" ).unwrap_or( "" );
             if verbosity {
-                println!( "Ending a timer for `{}` with message \"{}\".", timer_name.unwrap(), timer_entry.unwrap() );
+                if n == "" {
+                    println!( "Ending latest running timer" );
+                } else {
+                    println!( "Ending a timer for `{}` with message \"{}\".", &n, &e );
+                }
+            }
+
+            let connection = establish_connection();
+
+            let timer: std::result::Result<models::Timer, diesel::result::Error> = timers.filter( name.like( &n ) )
+                .filter( running.eq( 1 ) )
+                .first( &connection );
+
+            match timer {
+                Ok( t ) => {
+                    let _ = diesel::update( timers.find( &t.id ) )
+                        .set( ( running.eq( 0 ), end_time.eq( Local::now().timestamp() as i32 ), end_entry.eq( &e ) ) )
+                        .execute( &connection )
+                        .expect( &format!( "Unable to stop timer {}", &t.id ) );
+                },
+                Err( err ) => {
+                    if verbosity {
+                        println!( "{} running timers matching {}", &err, &n );
+                    }
+                    let latest_timer: std::result::Result<models::Timer, diesel::result::Error> = timers.filter( running.eq( 1 ) ).first( &connection );
+                    match latest_timer {
+                        Ok( lt ) => {
+                            let _ = diesel::update( timers.find( &lt.id ) )
+                                .set( ( running.eq( 0 ), end_time.eq( Local::now().timestamp() as i32 ), end_entry.eq( &e ) ) )
+                                .execute( &connection )
+                                .expect( "Unable to stop latest running timer" );
+                        },
+                        _ => (),
+                    }
+                }
             }
         },
-        ( "data", Some( options ) ) => {
-            use tick::schema::timers::dsl::*;
+        ( "list", Some( o ) ) => {
+            use schema::timers::dsl::*;
             let connection = establish_connection();
             let results = timers.order( id.asc() )
                 .load::<Timer>( &connection )
-                .expect( "Error loading timers" );
+                .expect( "Error loading timers table" );
             println!( "Displaying {} timers", results.len() );
             for timer in results {
-                println!( "{:?}", timer )
+                println!(
+                    "{timer_id} {start_date} [ {start_time} - {end_time} ] ( {duration} ) [ {timer_name} ]",
+                    timer_id=timer.id,
+                    start_date=parse_date( timer.start_time ),
+                    start_time=parse_time( timer.start_time ),
+                    end_time=parse_time( timer.end_time ),
+                    duration=get_duration( timer.start_time, timer.end_time ),
+                    timer_name=timer.name
+                );
+                if verbosity {
+                    println!( "message(s):\n{} {}", timer.start_entry, timer.end_entry );
+                }
             }
         },
-        ( "status", Some( options ) ) => {
-            use tick::schema::timers::dsl::*;
+        ( "status", Some( o ) ) => {
+            use schema::timers::dsl::*;
             let connection = establish_connection();
-            let results = timers.filter( end_time.is_null() )
+            let results = timers.filter( running.eq( 1 ) )
                 .order( id.desc() )
                 .load::<Timer>( &connection )
                 .expect( "Error loading timers" );
-            match options.occurrences_of( "all" ) {
-                1 => {
-                    println!( "Status for all timers:" );
-                    for timer in results {
-                        println!( "{:?}", timer )
-                    }
-                },
-                _ => println!( "Status for latest timer: {:?}", results.first() ),
+
+            if results.len() > 0 {
+                let timer = results.first().unwrap();
+                println!(
+                    "{timer_id} {start_date} [ {start_time} - {end_time} ] ( {duration} ) [ {timer_name} ]",
+                    timer_id=timer.id,
+                    start_date=parse_date( timer.start_time ),
+                    start_time=parse_time( timer.start_time ),
+                    end_time=parse_time( timer.end_time ),
+                    duration=get_duration( timer.start_time, timer.end_time ),
+                    timer_name=timer.name
+                );
             }
         },
         _ => (),
