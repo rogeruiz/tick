@@ -37,8 +37,10 @@ subcommands:
       about: Get list of all the timers.
       args:
         - name: *name
-        - type:
-            short: t
-            long: type
-            help: Type of data to export, i.e. 'csv' or 'json'.
+  - remove:
+      about: Remove a specific timer by id.
+      args:
+        - id:
+            long: id
+            help: The timer id to remove
             takes_value: true

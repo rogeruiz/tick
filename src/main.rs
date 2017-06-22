@@ -86,8 +86,14 @@ fn main () {
 
     match matches.subcommand() {
         ( "start", Some( o ) ) => {
-            let n = o.value_of( "name" ).unwrap();
+            let n = o.value_of( "name" ).unwrap_or( "" );
             let e = o.value_of( "entry" ).unwrap_or( "" );
+
+            if n == "" {
+                println!( "Cannot start a timer without a name: {}", &n );
+                process::exit(99);
+            }
+
             if verbosity {
                 println!( "Starting a timer for `{}` with message \"{}\".", &n, &e );
             }
@@ -102,7 +108,7 @@ fn main () {
             let e = o.value_of( "entry" ).unwrap_or( "" );
             if verbosity {
                 if n == "" {
-                    println!( "Ending latest running timer" );
+                    println!( "Ending latest running timer with message \"{}\"", &e );
                 } else {
                     println!( "Ending a timer for `{}` with message \"{}\".", &n, &e );
                 }
@@ -194,8 +200,21 @@ fn main () {
             }
         },
         ( "remove", Some( o ) ) => {
-            //use schema::timers::dsl::*;
-            //let connection = establish_connection();
+            use schema::timers::dsl::*;
+            let i: i32 = value_t!( o, "id", i32 ).unwrap_or( 0 );
+
+            if i < 1 {
+                println!( "Cannot remove timers without a proper id." );
+                process::exit(99);
+            }
+
+            if verbosity {
+                println!( "Removing timer with matching id {}", &i );
+            }
+
+            let _ = diesel::delete( timers.find( &i ) )
+                .execute( &connection )
+                .expect( &format!( "Unable to remove timer matching id {}", &i ) );
         },
         _ => (),
     };
