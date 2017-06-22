@@ -1,3 +1,7 @@
 language: rust
 rust:
   - stable
+  - nightly
+
+env:
+- DATABASE_URL=./travis.db

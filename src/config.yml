@@ -6,8 +6,8 @@ args:
       help: Set a name for this timer.
       takes_value: true
   - entry: &entry
-      short: e
-      long: entry
+      short: m
+      long: message
       help: Set a message for this timer.
       takes_value: true
   - verbose:
@@ -26,12 +26,21 @@ subcommands:
       args:
         - name: *name
         - entry: *entry
-  - data:
-      about: Export data from timers.
+  - status:
+      about: Get the status of a running timer.
+      args:
+        - all:
+            short: a
+            long: all
+            help: Show all running timers.
+  - list:
+      about: Get list of all the timers.
       args:
         - name: *name
-        - type:
-            short: t
-            long: type
-            help: Type of data to export, i.e. 'csv' or 'json'
+  - remove:
+      about: Remove a specific timer by id.
+      args:
+        - id:
+            long: id
+            help: The timer id to remove
             takes_value: true
