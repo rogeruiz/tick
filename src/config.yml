@@ -13,7 +13,7 @@ args:
   - verbose:
       short: v
       long: verbose
-      multiple: true
+      multiple: false
       help: Sets the level of verbosity.
 subcommands:
   - start:

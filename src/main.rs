@@ -11,6 +11,7 @@ use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 use dotenv::dotenv;
 use std::env;
+use std::process;
 
 use clap::App;
 
@@ -81,6 +82,7 @@ fn main () {
         .version( crate_version!() )
         .get_matches();
     let verbosity = matches.is_present( "verbose" );
+    let connection = establish_connection();
 
     match matches.subcommand() {
         ( "start", Some( o ) ) => {
@@ -89,9 +91,10 @@ fn main () {
             if verbosity {
                 println!( "Starting a timer for `{}` with message \"{}\".", &n, &e );
             }
-            let connection = establish_connection();
             create_timer( &connection, &n, &e );
-            println!( "Started timer for {}", n );
+            if verbosity {
+                println!( "Started timer for {}", n );
+            }
         },
         ( "stop", Some( o ) ) => {
             use schema::timers::dsl::*;
@@ -105,8 +108,6 @@ fn main () {
                 }
             }
 
-            let connection = establish_connection();
-
             let timer: std::result::Result<models::Timer, diesel::result::Error> = timers.filter( name.like( &n ) )
                 .filter( running.eq( 1 ) )
                 .first( &connection );
@@ -117,10 +118,13 @@ fn main () {
                         .set( ( running.eq( 0 ), end_time.eq( Local::now().timestamp() as i32 ), end_entry.eq( &e ) ) )
                         .execute( &connection )
                         .expect( &format!( "Unable to stop timer {}", &t.id ) );
+                    if verbosity {
+                        println!( "Stopped timer for {}", &t.name );
+                    }
                 },
                 Err( err ) => {
                     if verbosity {
-                        println!( "{} running timers matching {}", &err, &n );
+                        println!( "{} running timers matching {}, so attempting to stop lastest running timer.", &err, &n );
                     }
                     let latest_timer: std::result::Result<models::Timer, diesel::result::Error> = timers.filter( running.eq( 1 ) ).first( &connection );
                     match latest_timer {
@@ -128,7 +132,10 @@ fn main () {
                             let _ = diesel::update( timers.find( &lt.id ) )
                                 .set( ( running.eq( 0 ), end_time.eq( Local::now().timestamp() as i32 ), end_entry.eq( &e ) ) )
                                 .execute( &connection )
-                                .expect( "Unable to stop latest running timer" );
+                                .expect( "Unable to stop latest running timer." );
+                            if verbosity {
+                                println!( "Stopped latest running timer for {}", &lt.name );
+                            }
                         },
                         _ => (),
                     }
@@ -137,11 +144,12 @@ fn main () {
         },
         ( "list", Some( o ) ) => {
             use schema::timers::dsl::*;
-            let connection = establish_connection();
             let results = timers.order( id.asc() )
                 .load::<Timer>( &connection )
                 .expect( "Error loading timers table" );
-            println!( "Displaying {} timers", results.len() );
+            if verbosity {
+                println!( "Displaying {} timers", results.len() );
+            }
             for timer in results {
                 println!(
                     "{timer_id} {start_date} [ {start_time} - {end_time} ] ( {duration} ) [ {timer_name} ]",
@@ -153,13 +161,12 @@ fn main () {
                     timer_name=timer.name
                 );
                 if verbosity {
-                    println!( "message(s):\n{} {}", timer.start_entry, timer.end_entry );
+                    println!( "message(s):\n{}\n{}", timer.start_entry, timer.end_entry );
                 }
             }
         },
         ( "status", Some( o ) ) => {
             use schema::timers::dsl::*;
-            let connection = establish_connection();
             let results = timers.filter( running.eq( 1 ) )
                 .order( id.desc() )
                 .load::<Timer>( &connection )
@@ -167,16 +174,28 @@ fn main () {
 
             if results.len() > 0 {
                 let timer = results.first().unwrap();
-                println!(
-                    "{timer_id} {start_date} [ {start_time} - {end_time} ] ( {duration} ) [ {timer_name} ]",
-                    timer_id=timer.id,
-                    start_date=parse_date( timer.start_time ),
-                    start_time=parse_time( timer.start_time ),
-                    end_time=parse_time( timer.end_time ),
-                    duration=get_duration( timer.start_time, timer.end_time ),
-                    timer_name=timer.name
-                );
+                if verbosity {
+                    println!(
+                        "{timer_id} {start_date} [ {start_time} - {end_time} ] ( {duration} ) [ {timer_name} ]",
+                        timer_id=timer.id,
+                        start_date=parse_date( timer.start_time ),
+                        start_time=parse_time( timer.start_time ),
+                        end_time=parse_time( timer.end_time ),
+                        duration=get_duration( timer.start_time, timer.end_time ),
+                        timer_name=timer.name
+                    );
+                    println!( "message(s):\n{} {}", timer.start_entry, timer.end_entry );
+                } else {
+                    println!( "elapsed time: {}", get_duration( timer.start_time, timer.end_time ) );
+                }
+            } else {
+                println!( "No timers currently running" );
+                process::exit(99);
             }
+        },
+        ( "remove", Some( o ) ) => {
+            //use schema::timers::dsl::*;
+            //let connection = establish_connection();
         },
         _ => (),
     };
