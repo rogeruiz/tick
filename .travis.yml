@@ -6,9 +6,11 @@ rust:
 
 cache: cargo
 
+env:
+  - DATABASE_URL=$HOME/.tick/db/main.db
+
 before_script:
 - "( cargo install diesel_cli || true )"
 - export PATH=$HOME/.cargo/bin:$PATH
 - mkdir -p $HOME/.tick/db
-- cp ./.env.example ./.env
 - diesel setup
