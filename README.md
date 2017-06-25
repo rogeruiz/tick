@@ -81,10 +81,10 @@ Run `tick --help` to see all the available commands you can use. Below is an
 example workflow of how you would use Tick.
 
 ```sh
-$ tick [ -v ] start --name my-timer [ --entry "I can do the thing!" ]
+$ tick [ -v ] start --name my-timer [ --message "I can do the thing!" ]
 $ tick [ -v ] status
-$ tick [ -v ] stop --name my-timer [ --entry "I did the thing!" ]
-$ tick [ -v ] stop [ --entry "I did the thing!" ] # without a name argument stops the latest running timer
+$ tick [ -v ] stop --name my-timer [ --message "I did the thing!" ]
+$ tick [ -v ] stop [ --message "I did the thing!" ] # without a name argument stops the latest running timer
 $ tick [ -v ] list
 $ tick [ -v ] remove --id $( tick list | tail -1 | awk '{ print $1 }' ) # delete the latest timer by Timer ID
 ```
