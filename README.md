@@ -39,7 +39,7 @@ $ cd tick
 # Setup the database, environment, and run any migrations.
 $ cargo install diesel_cli
 $ cp ./.env.example ./.env
-$ diesel init
+$ diesel setup
 
 # Build the release.
 $ cargo build --release
@@ -60,7 +60,7 @@ make sure you've run the migration found in this repository. Use the
 ```sh
 $ cargo install diesel_cli
 $ cp ./.env.example ./.env
-$ diesel init
+$ diesel setup
 ```
 
 ## Motivation
