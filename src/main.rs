@@ -148,7 +148,7 @@ fn main () {
                 }
             }
         },
-        ( "list", Some( o ) ) => {
+        ( "list", _ ) => {
             use schema::timers::dsl::*;
             let results = timers.order( id.asc() )
                 .load::<Timer>( &connection )
@@ -171,7 +171,7 @@ fn main () {
                 }
             }
         },
-        ( "status", Some( o ) ) => {
+        ( "status", _ ) => {
             use schema::timers::dsl::*;
             let results = timers.filter( running.eq( 1 ) )
                 .order( id.desc() )

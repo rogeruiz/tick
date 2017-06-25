@@ -10,26 +10,57 @@ Info | Description
 [![Project Build Status](https://travis-ci.org/rogeruiz/tick.svg?branch=master)](https://travis-ci.org/rogeruiz/tick) | Project build status for Tick CLI
 [Installation](#installation) | Installing Tick CLI.
 [Motivation](#motivation) | Why use Tick CLI?
+[Commands](#commands) | Using Tick CLI.
 [Inspiration](#inspiration) | Everything is a remix, including Tick CLI.
 [Contributing](CONTRIBUTING.md) | Contribute to Tick CLI.
 [License](LICENSE.md) | License for Tick CLI.
 
 ## Installation
 
-To install `tick` on your system, you will need to compile it from source _for
-now_.
+To install Tick, you can either compile it from source or download the binary
+from [the releases page][tick-releases] for the release you want and the
+platform you need.
+
+[tick-releases]: https://github.com/rogeruiz/tick/releases "The releases for this repo"
+
+### Compiling Tick from source
+
+The steps are pretty straight-forward as long as you are within the realm of
+[Tier 1 support][rustlang-tier1] for the Rust compiler.
+
+[rustlang-tier1]: https://forge.rust-lang.org/platform-support.html#tier-1 "Rust Platform Support"
 
 ```shell
-# Clone the repository
-git clone https://github.com/rogeruiz/tick.git
+# Clone the repository.
+$ git clone https://github.com/rogeruiz/tick.git
 
-# Build the release
-cd tick
-cargo build --release
+$ cd tick
 
-# Install and make tick executable
-cp ./target/release/tick /usr/local/bin/tick
-chmod +x /usr/local/bin/tick
+# Setup the database, environment, and run any migrations.
+$ cargo install diesel_cli
+$ cp ./.env.example ./.env
+$ diesel init
+
+# Build the release.
+$ cargo build --release
+
+# Install in your path.
+$ cp ./target/release/tick /usr/local/bin/tick
+```
+
+### Troubleshooting the first run of tick
+
+Currently when you run Tick for the first time and haven't setup the database
+tables for the timers nor exported the path to your database via `$DATABASE_URL`
+in your shell, you're going to run into a Rust panic. Remember to setup your
+environment with the right variable set to the path to your SQLite database and
+make sure you've run the migration found in this repository. Use the
+`diesel_cli` cargo package to setup the database from within the cloned project.
+
+```sh
+$ cargo install diesel_cli
+$ cp ./.env.example ./.env
+$ diesel init
 ```
 
 ## Motivation
@@ -40,9 +71,23 @@ works great, it depends on `clocker` and `node` to handle time tracking.
 
 The main motivation around writing this was to remove the `node` and `clocker`
 dependencies from `tux` along with adding customizable exporting mechanisms.
-Tracking your time can be hard enough, so `tick` tries making it a lot easier.
+Tracking your time can be hard enough, so Tick tries making it a lot easier.
 
 [tux-src]: https://github.com/rogeruiz/.files/blob/master/bin/tux "`.files/bin/tux` Source"
+
+## Commands
+
+Run `tick --help` to see all the available commands you can use. Below is an
+example workflow of how you would use Tick.
+
+```sh
+$ tick [ -v ] start --name my-timer [ --entry "I can do the thing!" ]
+$ tick [ -v ] status
+$ tick [ -v ] stop --name my-timer [ --entry "I did the thing!" ]
+$ tick [ -v ] stop [ --entry "I did the thing!" ] # without a name argument stops the latest running timer
+$ tick [ -v ] list
+$ tick [ -v ] remove --id $( tick list | tail -1 | awk '{ print $1 }' ) # delete the latest timer by Timer ID
+```
 
 ## Inspiration
 
