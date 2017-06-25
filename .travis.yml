@@ -1,7 +1,15 @@
 language: rust
+
 rust:
   - stable
   - nightly
 
+cache: cargo
+
 env:
-- DATABASE_URL=./travis.db
+- DATABASE_URL=./test.db
+
+before_script:
+- "( cargo install diesel_cli || true )"
+- export PATH=$HOME/.cargo/bin:$PATH
+- diesel setup
