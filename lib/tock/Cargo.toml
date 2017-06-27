@@ -1,0 +1,6 @@
+[package]
+name = "tock"
+version = "0.1.0"
+authors = ["Roger Steve Ruiz <roger.ruiz@gsa.gov>"]
+
+[dependencies]
