@@ -1,6 +1,26 @@
 [package]
 name = "tock"
 version = "0.1.0"
-authors = ["Roger Steve Ruiz <roger.ruiz@gsa.gov>"]
+authors = ["Roger Steve Ruiz <hi@rog.gr"]
+description = "A time-tracking library used by Tick CLI with support for SQLite."
+repository = "https://github.com/rogeruiz/tick"
+readme = "README.md"
+keywords = [
+  "library",
+  "sqlite",
+  "timekeeping",
+  "time-tracking"
+]
+license = "MIT"
 
 [dependencies]
+dotenv = "0.10"
+chrono = "0.3"
+
+[dependencies.diesel]
+version = "0.13"
+features = [ "sqlite" ]
+
+[dependencies.diesel_codegen]
+version = "0.13"
+features = [ "sqlite" ]
