@@ -6,6 +6,7 @@ extern crate dotenv;
 extern crate chrono;
 
 use std::result;
+use std::env;
 use dotenv::dotenv;
 use chrono::prelude::*;
 use diesel::prelude::*;
@@ -23,7 +24,7 @@ pub fn establish_connection() -> SqliteConnection {
         .expect( &format!( "Error connecting to {}", database_url ) )
 }
 
-pub fn create_timer<'a>( conn: &SqliteConnection, name: &'a str, start_entry: &'a str ) -> usize {
+pub fn create_timer<'a>( conn: &'a SqliteConnection, name: &'a str, start_entry: &'a str ) -> usize {
 
     let new_timer = NewTimer {
         name: name,
@@ -38,11 +39,11 @@ pub fn create_timer<'a>( conn: &SqliteConnection, name: &'a str, start_entry: &'
         .expect( "Error saving new timer" )
 }
 
-fn latest_timer<'a>( conn: &SqliteConnection, name: &'a str ) -> Result<models::Timer, diesel::result::Error> {
+fn latest_timer<'a>( conn: &'a SqliteConnection, timer_name: &'a str ) -> Result<models::Timer, diesel::result::Error> {
     use schema::timers::dsl::*;
 
-    if name != "" {
-        timers.filter( name.like( &name ) )
+    if timer_name != "" {
+        timers.filter( name.like( &timer_name ) )
             .filter( running.eq( 1 ) )
             .first( &conn )
     } else {
@@ -51,10 +52,10 @@ fn latest_timer<'a>( conn: &SqliteConnection, name: &'a str ) -> Result<models::
     }
 }
 
-pub fn stop_timer<'a>( conn: &SqliteConnection, name: &'a str, end_entry: &'a str ) -> usize {
+pub fn stop_timer<'a>( conn: &'a SqliteConnection, timer_name: &'a str, timer_end_entry: &'a str ) -> usize {
     use schema::timers::dsl::*;
 
-    let timer = latest_timer( &conn, &name );
+    let timer = latest_timer( &conn, &timer_name );
 
     match timer {
         Ok( t ) => {
@@ -62,28 +63,37 @@ pub fn stop_timer<'a>( conn: &SqliteConnection, name: &'a str, end_entry: &'a st
                 .set( (
                     running.eq( 0 ),
                     end_time.eq( Local::now().timestamp() as i32 ),
-                    end_entry.eq( &end_entry )
+                    end_entry.eq( &timer_end_entry )
                 ) )
                 .execute( &conn )
-                .expect( &format!( "Unable to stop timer {}", id ) )
+                .expect( &format!( "Unable to stop timer {}", &t.id ) )
         },
-        _ => {
-            println!( "Are you sure a timer is running? Better go catch it, lol." );
-        }
+        Err( _ ) => println!( "Are you sure a timer is running? Better go catch it, lol." )
     }
 
 }
 
-pub fn list_timers<'a>( conn: &SqliteConnection ) -> QueryResult<Vec<U>> {
+pub fn list_timers<'a>( conn: &'a SqliteConnection ) -> QueryResult<usize> {
     use schema::timers::dsl::*;
     timers.order( id.asc() )
-        .load::<Timer>( &connection )
-        .expect( "Error loading timers table" );
+        .load::<Timer>( &conn )
+        .expect( "Error loading timers table" )
 }
 
-pub fn check_timer<'a>( conn: &SqliteConnection ) -> {}
+pub fn check_timer<'a>( conn: &'a SqliteConnection ) -> QueryResult<usize> {
+    use schema::timers::dsl::*;
+    timers.filter( running.eq( 1 ) )
+        .order( id.desc() )
+        .load::<Timer>( &conn )
+        .expect( "Error getting running timer" )
+}
 
-pub fn remove_timer<'a>( conn: &SqliteConnection ) -> {}
+pub fn remove_timer<'a>( conn: &'a SqliteConnection, lookup_id: &'a i32 ) -> QueryResult<usize> {
+    use schema::timers::dsl::*;
+    diesel::delete( timers.find( &lookup_id ) )
+        .execute( &conn )
+        .expect( &format!( "Unable to remove timer matching id {}", &lookup_id ) )
+}
 
 pub fn parse_date<'a>( ts: i32 ) -> String {
     let timestring = format!( "{:?}", ts );

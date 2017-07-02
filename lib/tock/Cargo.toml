@@ -6,7 +6,6 @@ description = "A time-tracking library used by Tick CLI with support for SQLite.
 repository = "https://github.com/rogeruiz/tick"
 readme = "README.md"
 keywords = [
-  "library",
   "sqlite",
   "timekeeping",
   "time-tracking"
