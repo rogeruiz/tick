@@ -1,12 +1,13 @@
 [root]
 name = "tick"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "chrono 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "clap 2.24.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "diesel 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "diesel_codegen 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "dotenv 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tock 0.1.0",
 ]
 
 [[package]]
@@ -335,6 +336,16 @@ dependencies = [
  "libc 0.2.23 (registry+https://github.com/rust-lang/crates.io-index)",
  "redox_syscall 0.1.18 (registry+https://github.com/rust-lang/crates.io-index)",
  "winapi 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "tock"
+version = "0.1.0"
+dependencies = [
+ "chrono 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "diesel 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "diesel_codegen 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "dotenv 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
