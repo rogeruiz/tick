@@ -1,4 +1,5 @@
 #[ macro_use ] extern crate clap;
+extern crate tock;
 
 use std::env;
 use std::process;
@@ -48,11 +49,10 @@ fn main () {
 
             stop_timer( &n, &e );
         },
-        ( "list", _ ) => {
+        ( "list", Some( o ) ) => {
             use schema::timers::dsl::*;
-            let results = timers.order( id.asc() )
-                .load::<Timer>( &connection )
-                .expect( "Error loading timers table" );
+            let n = o.value_of( "name" ).unwrap_or( "" );
+            let results = list_timers( &connection );
             if verbosity {
                 println!( "Displaying {} timers", results.len() );
             }
@@ -73,22 +73,19 @@ fn main () {
         },
         ( "status", _ ) => {
             use schema::timers::dsl::*;
-            let results = timers.filter( running.eq( 1 ) )
-                .order( id.desc() )
-                .load::<Timer>( &connection )
-                .expect( "Error loading timers" );
+            let results = check_timer( &connection );
 
             if results.len() > 0 {
                 let timer = results.first().unwrap();
                 if verbosity {
                     println!(
                         "{timer_id} {start_date} [ {start_time} - {end_time} ] ( {duration} ) [ {timer_name} ]",
-                        timer_id=timer.id,
-                        start_date=parse_date( timer.start_time ),
-                        start_time=parse_time( timer.start_time ),
-                        end_time=parse_time( timer.end_time ),
-                        duration=get_duration( timer.start_time, timer.end_time ),
-                        timer_name=timer.name
+                        timer_id = timer.id,
+                        start_date = parse_date( timer.start_time ),
+                        start_time = parse_time( timer.start_time ),
+                        end_time = parse_time( timer.end_time ),
+                        duration = get_duration( timer.start_time, timer.end_time ),
+                        timer_name = timer.name
                     );
                     println!( "message(s):\n{} {}", timer.start_entry, timer.end_entry );
                 } else {
