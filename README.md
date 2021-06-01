@@ -51,11 +51,12 @@ $ cp ./target/release/tick /usr/local/bin/tick
 ### Troubleshooting the first run of tick
 
 Currently when you run Tick for the first time and haven't setup the database
-tables for the timers nor exported the path to your database via `$DATABASE_URL`
-in your shell, you're going to run into a Rust panic. Remember to setup your
-environment with the right variable set to the path to your SQLite database and
-make sure you've run the migration found in this repository. Use the
-`diesel_cli` cargo package to setup the database from within the cloned project.
+tables for the timers nor exported the path to your database via
+`$TICK_DATABASE_FILE` in your shell, you're going to run into a Rust panic.
+Remember to setup your environment with the right variable set to the path to
+your SQLite database and make sure you've run the migration found in this
+repository. Use the `diesel_cli` cargo package to setup the database from within
+the cloned project.
 
 ```sh
 $ cargo install diesel_cli

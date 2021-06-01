@@ -21,8 +21,8 @@ use schema::timers;
 fn establish_connection() -> SqliteConnection {
     dotenv().ok();
 
-    let database_url = env::var( "DATABASE_URL" )
-        .expect( "DATABASE_URL expected to be set in the environment" );
+    let database_url = env::var( "TICK_DATABASE_FILE" )
+        .expect( "TICK_DATABASE_FILE expected to be set in the environment" );
     SqliteConnection::establish( &database_url )
         .expect( &format!( "Error connecting to {}", database_url ) )
 }
