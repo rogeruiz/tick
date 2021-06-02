@@ -26,9 +26,8 @@ features = [
 ]
 
 [dependencies.diesel]
-version = "0.13"
+version = "1.4.6"
 features = [ "sqlite" ]
 
-[dependencies.diesel_codegen]
-version = "0.13"
-features = [ "sqlite" ]
+[dependencies.diesel_migrations]
+version = "1.4.0"

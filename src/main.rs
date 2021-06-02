@@ -1,7 +1,7 @@
-#[ macro_use ] extern crate diesel_codegen;
+#[ macro_use ] extern crate diesel;
+#[ macro_use ] extern crate diesel_migrations;
 pub mod schema;
 pub mod models;
-#[ macro_use ] extern crate diesel;
 #[ macro_use ] extern crate clap;
 extern crate dotenv;
 extern crate chrono;
@@ -39,8 +39,8 @@ fn create_timer<'a>( conn: &SqliteConnection, name: &'a str, start_entry: &'a st
         running: 1,
     };
 
-    diesel::insert( &new_timer )
-        .into( timers::table )
+    diesel::insert_into( timers::table )
+        .values( &new_timer )
         .execute( conn )
         .expect( "Error saving new timer" )
 }
