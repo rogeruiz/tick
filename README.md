@@ -32,20 +32,20 @@ The steps are pretty straight-forward as long as you are within the realm of
 
 ```shell
 # Clone the repository.
-$ git clone https://github.com/rogeruiz/tick.git
+>_ git clone https://github.com/rogeruiz/tick.git
 
-$ cd tick
+>_ cd tick
 
 # Setup the database, environment, and run any migrations.
-$ cargo install diesel_cli
-$ cp ./.env.example ./.env
-$ diesel setup
+>_ cargo install diesel_cli
+>_ cp ./.env.example ./.env
+>_ diesel setup --database-url "${TICK_DATABASE_FILE}"
 
 # Build the release.
-$ cargo build --release
+>_ cargo build --release
 
 # Install in your path.
-$ cp ./target/release/tick /usr/local/bin/tick
+>_ cp ./target/release/tick /usr/local/bin/tick
 ```
 
 ### Troubleshooting the first run of tick
@@ -59,9 +59,9 @@ repository. Use the `diesel_cli` cargo package to setup the database from within
 the cloned project.
 
 ```sh
-$ cargo install diesel_cli
-$ cp ./.env.example ./.env
-$ diesel setup
+>_ cargo install diesel_cli
+>_ cp ./.env.example ./.env
+>_ diesel setup --database-url "${TICK_DATABASE_FILE}"
 ```
 
 ## Motivation
@@ -82,12 +82,12 @@ Run `tick --help` to see all the available commands you can use. Below is an
 example workflow of how you would use Tick.
 
 ```sh
-$ tick [ -v ] start --name my-timer [ --message "I can do the thing!" ]
-$ tick [ -v ] status
-$ tick [ -v ] stop --name my-timer [ --message "I did the thing!" ]
-$ tick [ -v ] stop [ --message "I did the thing!" ] # without a name argument stops the latest running timer
-$ tick [ -v ] list
-$ tick [ -v ] remove --id $( tick list | tail -1 | awk '{ print $1 }' ) # delete the latest timer by Timer ID
+>_ tick [ -v ] start --name my-timer [ --message "I can do the thing!" ]
+>_ tick [ -v ] status
+>_ tick [ -v ] stop --name my-timer [ --message "I did the thing!" ]
+>_ tick [ -v ] stop [ --message "I did the thing!" ] # without a name argument stops the latest running timer
+>_ tick [ -v ] list
+>_ tick [ -v ] remove --id $( tick list | tail -1 | awk '{ print $1 }' ) # delete the latest timer by Timer ID
 ```
 
 ## Inspiration
