@@ -33,9 +33,9 @@ fn establish_connection() -> SqliteConnection {
 fn create_timer<'a>( conn: &SqliteConnection, name: &'a str, start_entry: &'a str ) -> usize {
 
     let new_timer = NewTimer {
-        name: name,
+        name,
         start_time: Local::now().timestamp() as i32,
-        start_entry: start_entry,
+        start_entry,
         running: 1,
     };
 
