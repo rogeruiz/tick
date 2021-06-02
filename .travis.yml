@@ -7,10 +7,10 @@ rust:
 cache: cargo
 
 env:
-  - DATABASE_URL=$HOME/.tick/db/main.db
+  - TICK_DATABASE_FILE=$HOME/.tick/db/main.db
 
 before_script:
 - "( cargo install diesel_cli || true )"
 - export PATH=$HOME/.cargo/bin:$PATH
 - mkdir -p $HOME/.tick/db
-- diesel setup
+- diesel setup --database-url "${TICK_DATABASE_FILE}"
