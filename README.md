@@ -36,32 +36,11 @@ The steps are pretty straight-forward as long as you are within the realm of
 
 >_ cd tick
 
-# Setup the database, environment, and run any migrations.
->_ cargo install diesel_cli
->_ cp ./.env.example ./.env
->_ diesel setup --database-url "${TICK_DATABASE_FILE}"
-
 # Build the release.
 >_ cargo build --release
 
 # Install in your path.
 >_ cp ./target/release/tick /usr/local/bin/tick
-```
-
-### Troubleshooting the first run of tick
-
-Currently when you run Tick for the first time and haven't setup the database
-tables for the timers nor exported the path to your database via
-`$TICK_DATABASE_FILE` in your shell, you're going to run into a Rust panic.
-Remember to setup your environment with the right variable set to the path to
-your SQLite database and make sure you've run the migration found in this
-repository. Use the `diesel_cli` cargo package to setup the database from within
-the cloned project.
-
-```sh
->_ cargo install diesel_cli
->_ cp ./.env.example ./.env
->_ diesel setup --database-url "${TICK_DATABASE_FILE}"
 ```
 
 ## Motivation
