@@ -18,11 +18,14 @@ use clap::App;
 use models::*;
 use schema::timers;
 
+embed_migrations!("./migrations");
+
 fn establish_connection() -> SqliteConnection {
     dotenv().ok();
 
     let database_url = env::var( "TICK_DATABASE_FILE" )
         .expect( "TICK_DATABASE_FILE expected to be set in the environment" );
+
     SqliteConnection::establish( &database_url )
         .expect( &format!( "Error connecting to {}", database_url ) )
 }
@@ -83,6 +86,9 @@ fn main () {
         .get_matches();
     let verbosity = matches.is_present( "verbose" );
     let connection = establish_connection();
+
+    embedded_migrations::run( &connection )
+        .expect( "Initial migration failed to run." );
 
     match matches.subcommand() {
         ( "start", Some( o ) ) => {
