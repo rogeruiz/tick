@@ -1,1 +1,1 @@
-infer_schema!( "dotenv:DATABASE_URL" );
+infer_schema!( "dotenv:TICK_DATABASE_FILE" );
