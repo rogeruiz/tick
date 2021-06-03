@@ -23,6 +23,12 @@ platform you need.
 
 [tick-releases]: https://github.com/rogeruiz/tick/releases "The releases for this repo"
 
+### Supported platforms
+
+Tick has been used daily by me on different platforms such as macOS, Ubuntu, and
+Arch. While it hasn't been tested on other platforms such as Windows, patches
+are welcome to add tests for this.
+
 ### Compiling Tick from source
 
 The steps are pretty straight-forward as long as you are within the realm of
