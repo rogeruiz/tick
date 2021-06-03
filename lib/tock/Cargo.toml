@@ -1,12 +1,12 @@
 [package]
-name = "tick"
+name = "tock"
 version = "1.0.0"
 authors = ["Roger Steve Ruiz <hi@rog.gr"]
-description = "A time-tracking cli tool that starts, stops, lists, deletes, and checks timers."
+description = "A time-tracking library used by Tick CLI with support for SQLite."
 repository = "https://github.com/rogeruiz/tick"
 readme = "README.md"
 keywords = [
-  "cli",
+  "sqlite",
   "timekeeping",
   "time-tracking"
 ]
@@ -15,16 +15,6 @@ license = "MIT"
 [dependencies]
 dotenv = "0.10"
 chrono = "0.3"
-tock = { path = "./lib/tock" }
-
-[dependencies.clap]
-version = "2.24"
-features = [
-  "suggestions",
-  "color",
-  "wrap_help",
-  "yaml",
-]
 
 [dependencies.diesel]
 version = "1.4.6"

@@ -207,9 +207,9 @@ checksum = "789da6d93f1b866ffe175afc5322a4d76c038605a1c3319bb57b06967ca98a36"
 
 [[package]]
 name = "libsqlite3-sys"
-version = "0.20.1"
+version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "64d31059f22935e6c31830db5249ba2b7ecd54fd73a9909286f0a67aa55c2fbd"
+checksum = "370090ad578ba845a3ad4f383ceb3deba7abd51ab1915ad1f2c982cc6035e31c"
 dependencies = [
  "pkg-config",
  "vcpkg",
@@ -432,6 +432,7 @@ dependencies = [
  "diesel",
  "diesel_migrations",
  "dotenv",
+ "tock",
 ]
 
 [[package]]
@@ -443,6 +444,16 @@ dependencies = [
  "libc",
  "wasi",
  "winapi",
+]
+
+[[package]]
+name = "tock"
+version = "1.0.0"
+dependencies = [
+ "chrono",
+ "diesel",
+ "diesel_migrations",
+ "dotenv",
 ]
 
 [[package]]

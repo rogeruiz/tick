@@ -1,5 +1,5 @@
-table! {
-    timers {
+diesel::table! {
+    timers (id) {
         id -> Integer,
         name -> VarChar,
         start_time -> Integer,

@@ -1,3 +1,5 @@
+use super::schema::timers;
+
 #[derive(Queryable)]
 pub struct Timer {
     pub id: i32,
@@ -8,8 +10,6 @@ pub struct Timer {
     pub end_entry: String,
     pub running: i32,
 }
-
-use super::schema::timers;
 
 #[derive(Insertable)]
 #[table_name = "timers"]
