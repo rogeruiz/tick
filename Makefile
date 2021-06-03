@@ -15,9 +15,15 @@ __check_defined = \
 clean: ## Clean target directory.
 	@cargo clean
 
+.PHONY: build
+build: clean ## Build a debug binary for Tick.
+	@cargo build
+	@echo "Binary avaiable at ./target/debug/tick"
+
 .PHONY: release
 release: clean ## Build a release binary for Tick.
 	@cargo build --release
+	@echo "Binary avaiable at ./target/release/tick"
 
 .PHONY: test
 test: clean ## Run the tests for Tick.
