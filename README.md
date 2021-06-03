@@ -29,6 +29,12 @@ Tick has been used daily by me on different platforms such as macOS, Ubuntu, and
 Arch. While it hasn't been tested on other platforms such as Windows, patches
 are welcome to add tests for this.
 
+### Dependencies
+
+Tick leverages SQlite 3+ as a database. Make sure you have `sqlite3` installed
+on your machine. This ships with macOS and can usually be installed with a
+package manager on your platform of choice.
+
 ### Compiling Tick from source
 
 The steps are pretty straight-forward as long as you are within the realm of
