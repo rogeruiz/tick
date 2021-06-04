@@ -6,11 +6,11 @@ extern crate diesel_migrations;
 pub mod schema;
 pub mod models;
 
-extern crate dotenv;
+extern crate config;
+extern crate shellexpand;
 extern crate chrono;
 
-use std::env;
-use dotenv::dotenv;
+use config::*;
 use chrono::prelude::*;
 use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
@@ -23,13 +23,21 @@ embed_migrations!("../../migrations");
 // establish_connection returns a SqliteConnection to the
 // TICK_DATABASE_FILE environment variable
 pub fn establish_connection() -> SqliteConnection {
-    dotenv().ok();
 
-    let database_path = env::var("TICK_DATABASE_FILE")
-        .expect("TICK_DATABASE_FILE expected to be set in the environment");
+    let config_path = shellexpand::tilde("~/.config/tick/config.yaml").to_string();
 
-    let connection = SqliteConnection::establish(&database_path)
-        .unwrap_or_else(|_| panic!("Error connecting to {}", database_path));
+    let mut settings = Config::default();
+
+    settings.merge(File::with_name(&config_path))
+        .unwrap_or_else(|_| panic!("Error finding config file {:?}", &config_path));
+
+    let mut db_path = settings.get_str("database_path")
+        .expect("The key `database_path` was not found in the config file.");
+
+    db_path = shellexpand::tilde(&db_path).to_string();
+
+    let connection = SqliteConnection::establish(&db_path)
+        .unwrap_or_else(|_| panic!("Error connecting to {:?}", &db_path));
 
     // Run the migrations for the database
     let _ = embedded_migrations::run(&connection);

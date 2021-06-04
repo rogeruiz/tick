@@ -48,6 +48,10 @@ The steps are pretty straight-forward as long as you are within the realm of
 
 >_ cd tick
 
+# Setup your Tock configuration file
+>_ mkdir -p ~/.config/tick
+>_ echo "database_path: ~/.config/tick/main.db" > "${_}/config.yaml"
+
 # Build the release.
 >_ cargo build --release
 

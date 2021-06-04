@@ -13,8 +13,9 @@ keywords = [
 license = "MIT"
 
 [dependencies]
-dotenv = "0.10"
 chrono = "0.3"
+shellexpand = "2.1.0"
+config = "0.11.0"
 
 [dependencies.diesel]
 version = "1.4.6"
