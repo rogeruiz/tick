@@ -1,0 +1,25 @@
+[package]
+name = "tock"
+version = "1.0.0"
+authors = ["Roger Steve Ruiz <hi@rog.gr"]
+description = "A time-tracking library used by Tick CLI with support for SQLite."
+repository = "https://github.com/rogeruiz/tick"
+readme = "README.md"
+keywords = [
+  "sqlite",
+  "timekeeping",
+  "time-tracking"
+]
+license = "MIT"
+
+[dependencies]
+chrono = "0.3"
+shellexpand = "2.1.0"
+config = "0.11.0"
+
+[dependencies.diesel]
+version = "1.4.6"
+features = [ "sqlite" ]
+
+[dependencies.diesel_migrations]
+version = "1.4.0"

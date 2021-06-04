@@ -28,15 +28,8 @@ subcommands:
         - entry: *entry
   - status:
       about: Get the status of a running timer.
-      args:
-        - all:
-            short: a
-            long: all
-            help: Show all running timers.
   - list:
       about: Get list of all the timers.
-      args:
-        - name: *name
   - remove:
       about: Remove a specific timer by id.
       args:

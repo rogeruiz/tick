@@ -23,6 +23,18 @@ platform you need.
 
 [tick-releases]: https://github.com/rogeruiz/tick/releases "The releases for this repo"
 
+### Supported platforms
+
+Tick has been used daily by me on different platforms such as macOS, Ubuntu, and
+Arch. While it hasn't been tested on other platforms such as Windows, patches
+are welcome to add tests for this.
+
+### Dependencies
+
+Tick leverages SQlite 3+ as a database. Make sure you have `sqlite3` installed
+on your machine. This ships with macOS and can usually be installed with a
+package manager on your platform of choice.
+
 ### Compiling Tick from source
 
 The steps are pretty straight-forward as long as you are within the realm of
@@ -32,35 +44,19 @@ The steps are pretty straight-forward as long as you are within the realm of
 
 ```shell
 # Clone the repository.
-$ git clone https://github.com/rogeruiz/tick.git
+>_ git clone https://github.com/rogeruiz/tick.git
 
-$ cd tick
+>_ cd tick
 
-# Setup the database, environment, and run any migrations.
-$ cargo install diesel_cli
-$ cp ./.env.example ./.env
-$ diesel setup
+# Setup your Tock configuration file
+>_ mkdir -p ~/.config/tick
+>_ echo "database_path: ~/.config/tick/main.db" > "${_}/config.yaml"
 
 # Build the release.
-$ cargo build --release
+>_ cargo build --release
 
 # Install in your path.
-$ cp ./target/release/tick /usr/local/bin/tick
-```
-
-### Troubleshooting the first run of tick
-
-Currently when you run Tick for the first time and haven't setup the database
-tables for the timers nor exported the path to your database via `$DATABASE_URL`
-in your shell, you're going to run into a Rust panic. Remember to setup your
-environment with the right variable set to the path to your SQLite database and
-make sure you've run the migration found in this repository. Use the
-`diesel_cli` cargo package to setup the database from within the cloned project.
-
-```sh
-$ cargo install diesel_cli
-$ cp ./.env.example ./.env
-$ diesel setup
+>_ cp ./target/release/tick /usr/local/bin/tick
 ```
 
 ## Motivation
@@ -81,12 +77,12 @@ Run `tick --help` to see all the available commands you can use. Below is an
 example workflow of how you would use Tick.
 
 ```sh
-$ tick [ -v ] start --name my-timer [ --message "I can do the thing!" ]
-$ tick [ -v ] status
-$ tick [ -v ] stop --name my-timer [ --message "I did the thing!" ]
-$ tick [ -v ] stop [ --message "I did the thing!" ] # without a name argument stops the latest running timer
-$ tick [ -v ] list
-$ tick [ -v ] remove --id $( tick list | tail -1 | awk '{ print $1 }' ) # delete the latest timer by Timer ID
+>_ tick [ -v ] start --name my-timer [ --message "I can do the thing!" ]
+>_ tick [ -v ] status
+>_ tick [ -v ] stop --name my-timer [ --message "I did the thing!" ]
+>_ tick [ -v ] stop [ --message "I did the thing!" ] # without a name argument stops the latest running timer
+>_ tick [ -v ] list
+>_ tick [ -v ] remove --id $( tick list | tail -1 | awk '{ print $1 }' ) # delete the latest timer by Timer ID
 ```
 
 ## Inspiration
