@@ -13,22 +13,13 @@ keywords = [
 license = "MIT"
 
 [dependencies]
-dotenv = "0.10"
-chrono = "0.3"
 tock = { path = "./lib/tock" }
 
 [dependencies.clap]
-version = "2.24"
+version = "2.33.3"
 features = [
   "suggestions",
   "color",
   "wrap_help",
   "yaml",
 ]
-
-[dependencies.diesel]
-version = "1.4.6"
-features = [ "sqlite" ]
-
-[dependencies.diesel_migrations]
-version = "1.4.0"
