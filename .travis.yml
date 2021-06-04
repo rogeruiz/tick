@@ -2,15 +2,12 @@ language: rust
 
 rust:
   - stable
-  - nightly
 
 cache: cargo
 
-env:
-  - TICK_DATABASE_FILE=$HOME/.tick/db/main.db
-
 before_script:
-- "( cargo install diesel_cli || true )"
 - export PATH=$HOME/.cargo/bin:$PATH
-- mkdir -p $HOME/.tick/db
-- diesel setup --database-url "${TICK_DATABASE_FILE}"
+- mkdir -p $HOME/.config/tick
+- "echo 'database_path: ~/.config/tick/test.db' > $HOME/.config/tick/config.yaml"
+- cargo build
+- ./target/debug/tick help
